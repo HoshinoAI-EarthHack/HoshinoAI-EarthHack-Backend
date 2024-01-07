@@ -1,0 +1,16 @@
+Part 1:
+Inputs: ideas
+Additionals: Perhaps a list of resources, aka oil, gas, trees etc so that the AI can look at any of these resources and think about how they could be affected by the ideas
+Outputs: a list of resources, with a +1, 0, or -1 value
+
+Mayhaps Part 2:
+Store ideas and it's resources as seperate entities in a database
+Therefore, all you have to do is find resources that are similar
+If you find similar resources, with semi similar values, then 
+each resource should tie itself to a certain idea
+
+Part 3 (Using a feature to see pairs that use the other's resource by reusing or reccling):
+Imma be honest idk about this one, but asking the ChatGPT on how to recycle is the only way 
+I could think on how to do this
+
+
