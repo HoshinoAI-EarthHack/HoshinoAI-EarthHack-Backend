@@ -1,12 +1,16 @@
 from flask import Flask, request, jsonify
 import openai
 import os
+import sqlite3
+from db import con
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
+
+
 app = Flask(__name__)
 
-@app.route('/generate_values')
+@app.route('/generate_values', methods=["GET"])
 def generate_values():
     message = request.args.get("message")
     response = openai.chat.completions.create(
@@ -25,13 +29,41 @@ def generate_values():
                 "content": "The actual resources have to be physical concrete things, not abstract things like 'happiness' or 'money'. Focus on environmental resources, such as 'water', 'oxygen'. or 'oil'."
             },
             {
+                "role": "system",
+                "content": "Here is a list of resources you are allowed to use:  oxygen, carbon dioxide, water, oil, coal, natural gas, trees, plants, animals, food, paper, plastic, metal, glass, rubber, electronics, cars, trucks, planes, trains, ships, buildings, roads, bridges, dams, power plants, wind turbines, solar panels, batteries, nuclear power, infastructure"
+            },
+            {
                 "role": "user",
                 "content": message
             },
         ],
         temperature=0.7,
-        max_tokens=128
+        max_tokens=256
     )
 
-    return str(response.choices[0].message.content)
+    return (str(response.choices[0].message.content))
 
+@app.route('/add_idea', methods=["POST"])
+def add_idea():
+    userid = request.args.get("userid")
+    ideatext = request.args.get("ideatext")
+    con.execute("INSERT INTO ideas (userid, ideatext) VALUES (?, ?)", (userid, ideatext))
+    con.commit()
+    return "OK"
+
+@app.route('/get_ideas', methods=["GET"])
+def get_ideas():
+    userid = request.args.get("userid")
+    cursor = con.execute("SELECT * FROM ideas WHERE userid = ?", (userid,))
+    ideas = []
+    for row in cursor:
+        ideas.append(row)
+    return jsonify(ideas)
+
+
+
+
+# List of environmental resources
+# oxygen, carbon dioxide, water, oil, coal, natural gas, trees, plants, animals, food, paper, plastic, metal, glass, rubber, electronics, cars, trucks, planes, trains, ships, buildings, roads, bridges, dams, power plants, wind turbines, solar panels, batteries, nuclear power, infastructure
+# more resources
+# 
