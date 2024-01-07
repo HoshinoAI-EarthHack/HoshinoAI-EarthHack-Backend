@@ -1,14 +1,21 @@
 from flask import Flask, request, jsonify
 import openai
 import os
+import sqlite3
+from db import con
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
+
+
 app = Flask(__name__)
 
-@app.route('/generate_values')
+@app.route('/generate_values', methods=["GET"])
 def generate_values():
     message = request.args.get("message")
+    return gen_values(message)
+
+def gen_values(message):
     response = openai.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[
@@ -25,13 +32,60 @@ def generate_values():
                 "content": "The actual resources have to be physical concrete things, not abstract things like 'happiness' or 'money'. Focus on environmental resources, such as 'water', 'oxygen'. or 'oil'."
             },
             {
+                "role": "system",
+                "content": "Here is a list of resources you are allowed to use:  oxygen, carbon dioxide, water, oil, coal, natural gas, trees, plants, animals, food, paper, plastic, metal, glass, rubber, electronics, cars, trucks, planes, trains, ships, buildings, roads, bridges, dams, power plants, wind turbines, solar panels, batteries, nuclear power, infastructure"
+            },
+            {
+                "role": "system",
+                "content": "Additionally, make sure that 0 means that a certain resource is increasing, 1 means that it is neutral, and 2 means that it is decreasing. If you are unsure, just use 1.."
+            },
+            {
                 "role": "user",
                 "content": message
             },
         ],
         temperature=0.7,
-        max_tokens=128
+        max_tokens=256
     )
 
-    return str(response.choices[0].message.content)
+    return (str(response.choices[0].message.content))
 
+
+@app.route('/add_idea', methods=["POST"])
+def add_idea():
+    userid = request.args.get("userid")
+    ideatext = request.args.get("ideatext")
+    con.execute("INSERT INTO ideas (userid, ideatext) VALUES (?, ?)", (userid, ideatext))
+    con.commit()
+    return "OK"
+
+@app.route("/generate_idea", methods=["GET"])
+def generate_idea():
+    userid = request.args.get("userid")
+    ideatext = request.args.get("ideatext")
+    str_json = gen_values(ideatext)
+    con.execute("INSERT INTO ideas (userid, ideatext, resourcesJSON) VALUES (?, ?, ?)", (userid, ideatext, str_json))
+    con.commit()
+    return "OK"
+
+@app.route('/get_ideas', methods=["GET"])
+def get_ideas():
+    userid = request.args.get("userid")
+    cursor = con.execute("SELECT * FROM ideas WHERE userid = ?", (userid,))
+    ideas = []
+    for row in cursor:
+        row_data = {}
+        if len(row) <= 3:
+            row_data = {"id": row[0], "userid": row[1], "ideatext": row[2], "resourcesJSON": ""}
+        else:
+            row_data = {"id": row[0], "userid": row[1], "ideatext": row[2], "resourcesJSON": row[3]}
+        ideas.append(row_data)
+    return jsonify(ideas)
+
+
+
+
+# List of environmental resources
+# oxygen, carbon dioxide, water, oil, coal, natural gas, trees, plants, animals, food, paper, plastic, metal, glass, rubber, electronics, cars, trucks, planes, trains, ships, buildings, roads, bridges, dams, power plants, wind turbines, solar panels, batteries, nuclear power, infastructure
+# more resources
+# 
