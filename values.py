@@ -64,7 +64,7 @@ def generate_idea():
     data = request.json
     userid = data.get(data)#request.args.get("userid")
     ideatext = data.get(data)#request.args.get("ideatext")
-    
+
     str_json = gen_values(ideatext)
     con.execute("INSERT INTO ideas (userid, ideatext, resourcesJSON) VALUES (?, ?, ?)", (userid, ideatext, str_json))
     con.commit()
@@ -73,6 +73,9 @@ def generate_idea():
 @app.route('/get_ideas', methods=["GET"])
 def get_ideas():
     userid = request.args.get("userid")
+    return jsonify(get_idea_list(userid))
+
+def get_idea_list(userid):
     cursor = con.execute("SELECT * FROM ideas WHERE userid = ?", (userid,))
     ideas = []
     for row in cursor:
@@ -82,8 +85,7 @@ def get_ideas():
         else:
             row_data = {"id": row[0], "userid": row[1], "ideatext": row[2], "resourcesJSON": row[3]}
         ideas.append(row_data)
-    return jsonify(ideas)
-
+    return ideas
 
 
 

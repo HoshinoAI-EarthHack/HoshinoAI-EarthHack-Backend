@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 import openai
 import os
-
+from values import get_idea_list
 
 # To Be Retrieved from database
 ideas = ["Uber", "...","..."]
