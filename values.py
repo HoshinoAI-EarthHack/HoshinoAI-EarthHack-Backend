@@ -59,10 +59,12 @@ def add_idea():
     con.commit()
     return "OK"
 
-@app.route("/generate_idea", methods=["GET"])
+@app.route("/generate_idea", methods=["POST"])
 def generate_idea():
-    userid = request.args.get("userid")
-    ideatext = request.args.get("ideatext")
+    data = request.json
+    userid = data.get(data)#request.args.get("userid")
+    ideatext = data.get(data)#request.args.get("ideatext")
+    
     str_json = gen_values(ideatext)
     con.execute("INSERT INTO ideas (userid, ideatext, resourcesJSON) VALUES (?, ?, ?)", (userid, ideatext, str_json))
     con.commit()
