@@ -24,3 +24,6 @@ settings_local.py
 
 # Ignore database files
 database.db
+
+# Ignore environment file
+.env
