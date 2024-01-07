@@ -15,4 +15,5 @@ We can do one of two things:
     - Treat each vector like a vertex in a graph and ideally attempt to find Hamiltonian cycles.
     - Find subgraphs where instances of r_ij + r_jk = 0 is maximized. Surely this is horrendous.
 
+
  
