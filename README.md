@@ -3,7 +3,7 @@
 -> We evaluate them in terms of resources used in trinary terms {-1, 0 ,1} for resource impact
     -> Do this by shoving ideas into LLMs and getting them to spit out some output text that summarizes resource impact.
     -> Then convert the output text into a numerical value for each resource involved and cache away the initial output text somewhere.
-    -> Do this for all pitches, see how many distinct resources you have, and shove all of the data into a vector. {idea, r1, r2, ..., rn} (ri \in {-1, 0 ,1})
+    -> Do this for all pitches, see how many distinct resources you have, and shove all of the data into a vector. {idea, r1, r2, ..., rn} (ri \in {0, 1 ,2})
 -> Now we do actual math. 
 
 Suppose we have a set of vectors {v_1, ..., v_n} with each vector representing a pitch idea. 
