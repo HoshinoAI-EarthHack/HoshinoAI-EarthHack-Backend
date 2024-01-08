@@ -3,12 +3,16 @@ import openai
 import os
 import sqlite3
 from db import con
+from flask_cors import CORS
+
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 
 
 app = Flask(__name__)
+CORS(app)
+
 
 @app.route('/generate_values', methods=["GET"])
 def generate_values():
