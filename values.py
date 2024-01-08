@@ -53,26 +53,26 @@ def gen_values(message):
 
 @app.route('/add_idea', methods=["POST"])
 def add_idea():
-    userid = request.args.get("userid")
+    userid = int(request.args.get("userid"))
     ideatext = request.args.get("ideatext")
     con.execute("INSERT INTO ideas (userid, ideatext) VALUES (?, ?)", (userid, ideatext))
     con.commit()
     return "OK"
 
-@app.route("/generate_idea", methods=["POST"])
-def generate_idea():
+@app.route("/generate_ideas", methods=["POST"])
+def generate_ideas():
     data = request.json
-    userid = data.get(data)#request.args.get("userid")
-    ideatext = data.get(data)#request.args.get("ideatext")
-
-    str_json = gen_values(ideatext)
-    con.execute("INSERT INTO ideas (userid, ideatext, resourcesJSON) VALUES (?, ?, ?)", (userid, ideatext, str_json))
+    userid = int(data.get("userid"))#request.args.get("userid")
+    ideas_list = data.get("ideasList")#request.args.get("ideatext")
+    for idea in ideas_list:
+        str_json = gen_values(idea)
+        con.execute("INSERT INTO ideas (userid, ideatext, resourcesJSON) VALUES (?, ?, ?)", (userid, idea, str_json))
     con.commit()
     return "OK"
 
 @app.route('/get_ideas', methods=["GET"])
 def get_ideas():
-    userid = request.args.get("userid")
+    userid = int(request.args.get("userid"))
     return jsonify(get_idea_list(userid))
 
 def get_idea_list(userid):
