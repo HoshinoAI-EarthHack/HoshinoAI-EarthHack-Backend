@@ -1,14 +1,18 @@
 from flask import Flask, request, jsonify
-import openai
+#import openai
+from openai import OpenAI
 import os
 import sqlite3
 from db import con
 from flask_cors import CORS
 
 
-openai.api_key = os.getenv("OPENAI_API_KEY")
+#openai.api_key = os.getenv("OPENAI_API_KEY")
 
-
+client = OpenAI(
+    # This is the default and can be omitted
+    api_key=os.getenv("OPENAI_API_KEY"),
+)
 
 app = Flask(__name__)
 CORS(app)
@@ -20,7 +24,7 @@ def generate_values():
     return gen_values(message)
 
 def gen_values(message):
-    response = openai.chat.completions.create(
+    response = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[
             {
