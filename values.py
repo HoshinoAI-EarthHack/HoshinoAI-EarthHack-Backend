@@ -81,7 +81,10 @@ def generate_ideas():
 @app.route('/get_ideas', methods=["GET"])
 def get_ideas():
     userid = int(request.args.get("userid"))
-    return jsonify(get_idea_list(userid))
+    json_data = {}
+    for idea in get_idea_list(userid):
+        json_data[idea["id"]] = idea
+    return json_data
 
 def get_idea_list(userid):
     cursor = con.execute("SELECT * FROM ideas WHERE userid = ?", (userid,))
